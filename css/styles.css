@@ -6,27 +6,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: start;
-    min-height: 100vh;
+    padding: 16px;
     margin: 0;
-    padding: 10px;
     background-color: #fff;
     user-select: none;
     font-family: Arial, sans-serif;
-    overflow-y: auto;
   }
   
   canvas {
     max-width: 90vw;
-    max-height: 50vh; /* 🔽 стало меньше */
+    max-height: 50vh;
     width: auto;
     height: auto;
     cursor: pointer;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
+  }
+
+  button#reset {
+    margin-bottom: 50px; /* ⬅️ space below Reset button */
+    padding: 8px 16px;
+    font-size: 16px;
   }
   
   button {
-    margin: 10px 0;
+    margin-bottom: 20px;
     padding: 8px 16px;
     font-size: 16px;
   }
@@ -35,29 +38,45 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 15px;
-    margin-top: auto;
-    margin-bottom: 10px;
+    column-gap: 50px;  /* horizontal spacing between items in a row */
+    row-gap: 50px;     /* vertical spacing between rows */
+    max-width: 700px;  /* ограничим ширину, чтобы стрелки логично раскладывались */
   }
   
   .controls img {
-    width: 80px;
+    width: 120px;
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
+    outline: none;
+    border: none;
+    -webkit-tap-highlight-color: transparent; /* removes grey overlay on tap */
+  }
+
+  .controls img:focus {
+    outline: none;
   }
   
   .controls img:hover {
     transform: scale(1.1);
   }
   
-  @media (max-width: 600px) {
+  @media (max-width: 800px) {
+    .controls {
+      max-width: 800px; /* чуть меньше на мобильных */
+    }
+  
     .controls img {
-      width: 60px;
+      width: 100px;
     }
   
     canvas {
+      margin-bottom: 50px;
       max-height: 45vh;
+    }
+
+    button#reset {
+        margin-bottom: 50px;
     }
   }
   

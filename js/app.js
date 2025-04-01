@@ -5,6 +5,21 @@ let hiddenNumbers = [];
 let spinning = false;
 let arrowAngle = 0;
 
+let initialized = false;
+
+function initAudio() {
+  if (initialized) return;
+  initialized = true;
+
+  // Small silent play to "unlock" audio context on mobile
+  [spinSound, gongSound, blackboxSound, fanfareSound, finishSound, time_outSound, sound_10_secSound].forEach(audio => {
+    audio.play().then(() => audio.pause());
+  });
+}
+
+document.body.addEventListener('touchstart', initAudio, { once: true });
+document.body.addEventListener('click', initAudio, { once: true });
+
 // Responsive canvas size
 function resizeCanvas() {
   canvas.width = canvas.height = Math.min(window.innerWidth, window.innerHeight) * 0.9;
