@@ -46,6 +46,9 @@
   .controls img {
     width: 120px;
     height: auto;
+    aspect-ratio: auto;
+    object-fit: contain; 
+    display: block;
     cursor: pointer;
     transition: transform 0.2s ease;
     outline: none;
