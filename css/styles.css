@@ -1,0 +1,58 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* вместо center — распределим по экрану */
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+    background-color: #fff;
+    user-select: none;
+    font-family: Arial, sans-serif;
+    overflow: hidden; /* запрещает прокрутку */
+  }
+  
+  canvas {
+    max-width: 90vw;
+    max-height: 60vh; /* ограничим высоту */
+    width: auto;
+    height: auto;
+    cursor: pointer;
+  }
+  
+  button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .controls img {
+    width: 120px;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .controls img:hover {
+    transform: scale(1.1);
+  }
+  
+  @media (max-width: 600px) {
+    .controls img {
+      width: 60px;
+    }
+  }
+  

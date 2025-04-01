@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Что? Где? Когда?</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <canvas id="spinner" width="400" height="400"></canvas>
+  <button id="reset">Reset</button>
+
+  <div class="controls">
+    <img id="fanfare" src="images/fanfare.png" alt="Fanfare">
+    <img id="gong" src="images/gong.png" alt="Gong">
+    <img id="blackbox" src="images/blackbox.png" alt="Black box">
+    <img id="10_sec" src="images/10_sec.png" alt="10 sec">
+    <img id="timer" src="images/timer.png" alt="Timer">
+    <img id="finish" src="images/finish.png" alt="Finish">
+    <img id="mute" src="images/mute.png" alt="Mute">
+  </div>
+
+  <audio id="spinSound" src="sounds/spin.mp3"></audio>
+  <audio id="gongSound" src="sounds/gong.mp3"></audio>
+  <audio id="blackboxSound" src="sounds/box.mp3"></audio>
+  <audio id="fanfareSound" src="sounds/fanfare.mp3"></audio>
+  <audio id="finishSound" src="sounds/pobediteli.mp3"></audio>
+  <audio id="time_outSound" src="sounds/time_out.mp3"></audio>
+  <audio id="sound_10_secSound" src="sounds/10_sec.mp3"></audio>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
