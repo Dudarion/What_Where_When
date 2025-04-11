@@ -20,6 +20,13 @@
     height: auto;
     cursor: pointer;
     margin-bottom: 50px;
+    -webkit-tap-highlight-color: transparent; /* removes grey tap box on mobile */
+    touch-action: manipulation;               /* improves responsiveness */
+    outline: none;                            /* removes focus ring */
+  }
+
+  canvas:focus {
+    outline: none;
   }
 
   button#reset {

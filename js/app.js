@@ -5,20 +5,34 @@ let hiddenNumbers = [];
 let spinning = false;
 let arrowAngle = 0;
 
-let initialized = false;
+// let initialized = false;
 
-function initAudio() {
-  if (initialized) return;
-  initialized = true;
+// function initAudio() {
+//     if (initialized) return;
+//     initialized = true;
+  
+//     // Play each sound silently to unlock them
+//     const audios = [
+//       spinSound, gongSound, blackboxSound, fanfareSound,
+//       finishSound, time_outSound, sound_10_secSound
+//     ];
+  
+//     audios.forEach(audio => {
+//       try {
+//         audio.volume = 0; // Mute temporarily
+//         audio.play().then(() => {
+//           audio.pause();
+//           audio.currentTime = 0;
+//           audio.volume = 1; // Restore volume
+//         });
+//       } catch (e) {
+//         // Ignore silently
+//       }
+//     });
+//   }
 
-  // Small silent play to "unlock" audio context on mobile
-  [spinSound, gongSound, blackboxSound, fanfareSound, finishSound, time_outSound, sound_10_secSound].forEach(audio => {
-    audio.play().then(() => audio.pause());
-  });
-}
-
-document.body.addEventListener('touchstart', initAudio, { once: true });
-document.body.addEventListener('click', initAudio, { once: true });
+// document.body.addEventListener('touchstart', initAudio);
+// document.body.addEventListener('click', initAudio);
 
 // Responsive canvas size
 function resizeCanvas() {
@@ -120,13 +134,13 @@ function drawWheel() {
     ctx.save();
     ctx.translate(radius, radius);
 
-    // Внешний зелёный круг
+    // External green circle
     ctx.beginPath();
     ctx.arc(0, 0, radius * 0.07, 0, 2 * Math.PI);
     ctx.fillStyle = 'green';
     ctx.fill();
 
-    // Внутренний красный круг
+    // Internal red circle
     ctx.beginPath();
     ctx.arc(0, 0, radius * 0.035, 0, 2 * Math.PI);
     ctx.fillStyle = 'red';
@@ -175,6 +189,9 @@ const spinSound = document.getElementById('spinSound');
 const gongSound = document.getElementById('gongSound');
 const blackboxSound = document.getElementById('blackboxSound');
 const fanfareSound = document.getElementById('fanfareSound');
+const sound_10_secSound = document.getElementById('sound_10_secSound');
+const time_outSound = document.getElementById('time_outSound');
+const finishSound = document.getElementById('finishSound');
 
 // Spin arrow logic
 canvas.addEventListener('click', (e) => {
@@ -189,7 +206,7 @@ canvas.addEventListener('click', (e) => {
     const randomSector = Math.floor(Math.random() * sectors);
   
     // Целевой угол: стрелка останавливается четко в центре выбранного сектора
-    const rotations = 5; // количество полных оборотов
+    const rotations = 18; // количество полных оборотов
     const targetAngle =
       rotations * 2 * Math.PI +
       (randomSector * sectorAngle) +
@@ -201,7 +218,7 @@ canvas.addEventListener('click', (e) => {
   
     function spin(time) {
       const elapsed = time - startTime;
-      const duration = 4000;
+      const duration = 15000;
   
       if (elapsed < duration) {
         arrowAngle = easeOut(elapsed, startAngle, targetAngle - startAngle, duration);
@@ -210,7 +227,6 @@ canvas.addEventListener('click', (e) => {
       } else {
         arrowAngle = targetAngle % (2 * Math.PI);
   
-        // 🔥 ВАЖНОЕ ИСПРАВЛЕНИЕ ЗДЕСЬ 🔥
         // Правильный расчет без дополнительного смещения!
         let normalizedAngle = arrowAngle % (2 * Math.PI);
         if (normalizedAngle < 0) normalizedAngle += 2 * Math.PI;
