@@ -1,92 +1,83 @@
 * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px;
-    margin: 0;
-    background-color: #fff;
-    user-select: none;
-    font-family: Arial, sans-serif;
-  }
-  
-  canvas {
-    max-width: 90vw;
-    max-height: 50vh;
-    width: auto;
-    height: auto;
-    cursor: pointer;
-    margin-bottom: 50px;
-    -webkit-tap-highlight-color: transparent; /* removes grey tap box on mobile */
-    touch-action: manipulation;               /* improves responsiveness */
-    outline: none;                            /* removes focus ring */
-  }
+  box-sizing: border-box;
+}
 
-  canvas:focus {
-    outline: none;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
 
-  button#reset {
-    margin-bottom: 50px; /* ⬅️ space below Reset button */
-    padding: 8px 16px;
-    font-size: 16px;
-  }
-  
-  button {
-    margin-bottom: 20px;
-    padding: 8px 16px;
-    font-size: 16px;
-  }
-  
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    column-gap: 50px;  /* horizontal spacing between items in a row */
-    row-gap: 50px;     /* vertical spacing between rows */
-    max-width: 700px;  /* ограничим ширину, чтобы стрелки логично раскладывались */
-  }
-  
-  .controls img {
-    width: 120px;
-    height: auto;
-    aspect-ratio: auto;
-    object-fit: contain; 
-    display: block;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    outline: none;
-    border: none;
-    -webkit-tap-highlight-color: transparent; /* removes grey overlay on tap */
-  }
+#top {
+  height: 66.6vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .controls img:focus {
-    outline: none;
-  }
-  
-  .controls img:hover {
-    transform: scale(1.1);
-  }
-  
-  @media (max-width: 800px) {
-    .controls {
-      max-width: 800px; /* чуть меньше на мобильных */
-    }
-  
-    .controls img {
-      width: 100px;
-    }
-  
-    canvas {
-      margin-bottom: 50px;
-      max-height: 45vh;
-    }
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  touch-action: manipulation;
+  outline: none;
+  display: block;
+}
 
-    button#reset {
-        margin-bottom: 50px;
-    }
-  }
-  
+#bottom {
+  height: 33.3vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px;
+  gap: 8px;
+}
+
+.row {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.row img,
+.row button {
+  flex: 1;
+  max-width: 100px;
+  height: 100%;
+  object-fit: contain;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.row img:hover,
+.row button:hover {
+  transform: scale(1.05);
+}
+
+.row img:focus,
+.row button:focus {
+  outline: none;
+}
+
+#countdownBtn {
+  background-color: #eee;
+  border: 2px solid #333;
+  border-radius: 10px;
+  font-size: 4rem;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+}

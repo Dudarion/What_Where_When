@@ -1,38 +1,47 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Что? Где? Когда?</title>
+  <title>What? Where? When?</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="icon" href="images/favicon.png" type="image/png">
 </head>
 <body>
+  <div id="top">
+    <canvas id="spinner"></canvas>
+  </div>
 
-  <!-- Spinner Wheel -->
-  <canvas id="spinner" width="400" height="400"></canvas>
-
-  <!-- Reset Button -->
-  <button id="reset">Reset</button>
-
-  <!-- Control Buttons (appear directly below spinner) -->
-  <div class="controls">
-    <img id="fanfare" src="images/fanfare.png" alt="Fanfare">
-    <img id="gong" src="images/gong.png" alt="Gong">
-    <img id="blackbox" src="images/blackbox.png" alt="Black box">
-    <img id="10_sec" src="images/10_sec.png" alt="10 seconds">
-    <img id="timer" src="images/timer.png" alt="Timer">
-    <img id="finish" src="images/finish.png" alt="Finish">
-    <img id="mute" src="images/mute.png" alt="Mute">
+  <div id="bottom">
+    <div class="row">
+      <button id="countdownBtn">60</button>
+      <img id="10_sec" src="images/10_sec.png" alt="10 seconds">
+      <img id="timer" src="images/timer.png" alt="Timer">
+    </div>
+    <div class="row">
+      <img id="gong" src="images/gong.png" alt="Gong">
+      <img id="blackbox" src="images/blackbox.png" alt="Black Box">
+      <img id="correct" src="images/correct.png" alt="Correct Answer">
+      <img id="wrong" src="images/wrong.png" alt="Wrong Answer">
+    </div>
+    <div class="row">
+      <img id="fanfare" src="images/fanfare.png" alt="Fanfare">
+      <img id="pause" src="images/pause.png" alt="Pause">
+      <img id="finish" src="images/finish.png" alt="Finish">
+      <img id="mute" src="images/mute.png" alt="Mute">
+    </div>
   </div>
 
   <!-- Audio Files -->
-  <audio id="spinSound" src="sounds/spin.mp3"> preload="auto"></audio>
-  <audio id="gongSound" src="sounds/gong.wav"> preload="auto"></audio>
-  <audio id="blackboxSound" src="sounds/box.mp3"> preload="auto"></audio>
-  <audio id="fanfareSound" src="sounds/fanfare.mp3"> preload="auto"></audio>
-  <audio id="finishSound" src="sounds/pobediteli.mp3"> preload="auto"></audio>
-  <audio id="time_outSound" src="sounds/time_out.mp3"> preload="auto"></audio>
-  <audio id="sound_10_secSound" src="sounds/10_sec.mp3"> preload="auto"></audio>
+  <audio id="spinSound" src="sounds/spin.mp3" preload="auto"></audio>
+  <audio id="gongSound" src="sounds/gong.wav" preload="auto"></audio>
+  <audio id="blackboxSound" src="sounds/box.mp3" preload="auto"></audio>
+  <audio id="fanfareSound" src="sounds/fanfare.mp3" preload="auto"></audio>
+  <audio id="finishSound" src="sounds/pobediteli.mp3" preload="auto"></audio>
+  <audio id="time_outSound" src="sounds/time_out.mp3" preload="auto"></audio>
+  <audio id="sound_10_secSound" src="sounds/10_sec.mp3" preload="auto"></audio>
+  <audio id="correctSound" src="sounds/correct.mp3" preload="auto"></audio>
+  <audio id="wrongSound" src="sounds/wrong.mp3" preload="auto"></audio>
+  <audio id="pauseSound" src="sounds/pause.mp3" preload="auto"></audio>
 
   <!-- Main JavaScript -->
   <script src="js/app.js"></script>

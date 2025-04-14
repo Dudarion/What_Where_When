@@ -4,187 +4,140 @@ const sectors = 12;
 let hiddenNumbers = [];
 let spinning = false;
 let arrowAngle = 0;
+let lastLandedSector = null;
 
-// let initialized = false;
-
-// function initAudio() {
-//     if (initialized) return;
-//     initialized = true;
-  
-//     // Play each sound silently to unlock them
-//     const audios = [
-//       spinSound, gongSound, blackboxSound, fanfareSound,
-//       finishSound, time_outSound, sound_10_secSound
-//     ];
-  
-//     audios.forEach(audio => {
-//       try {
-//         audio.volume = 0; // Mute temporarily
-//         audio.play().then(() => {
-//           audio.pause();
-//           audio.currentTime = 0;
-//           audio.volume = 1; // Restore volume
-//         });
-//       } catch (e) {
-//         // Ignore silently
-//       }
-//     });
-//   }
-
-// document.body.addEventListener('touchstart', initAudio);
-// document.body.addEventListener('click', initAudio);
-
-// Responsive canvas size
+// Resize canvas responsively
 function resizeCanvas() {
-  canvas.width = canvas.height = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+  const container = document.getElementById('top');
+  const size = Math.min(container.clientWidth, container.clientHeight);
+  canvas.width = canvas.height = size;
   drawWheel();
 }
+
+
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// Draw static wheel (numbers and sectors)
+// Drawing the wheel
 function drawWheel() {
-    const radius = canvas.width / 2;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-    // Translate to center
-    ctx.save();
-    ctx.translate(radius, radius);
-  
-    // Draw gray circle
-    ctx.fillStyle = '#aaa';
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-    ctx.fill();
+  const radius = canvas.width / 2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(radius, radius);
 
-    // Draw outer black border
+  ctx.fillStyle = '#aaa';
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.fill();
+
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = radius * 0.015;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius - ctx.lineWidth / 2, 0, 2 * Math.PI);
+  ctx.stroke();
+
+  for (let i = 0; i < sectors; i++) {
+    const angle = (2 * Math.PI / sectors) * i - Math.PI / 2;
+
     ctx.strokeStyle = '#000';
-    ctx.lineWidth = radius * 0.015;
     ctx.beginPath();
-    ctx.arc(0, 0, radius - ctx.lineWidth / 2, 0, 2 * Math.PI);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(radius * Math.cos(angle), radius * Math.sin(angle));
     ctx.stroke();
 
-  
-    // Draw sectors, lines, numbers
-    for (let i = 0; i < sectors; i++) {
-      const angle = (2 * Math.PI / sectors) * i - Math.PI / 2; // sector 12 at top
-  
-      // Draw sector lines
-      ctx.strokeStyle = '#000';
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(radius * Math.cos(angle), radius * Math.sin(angle));
-      ctx.stroke();
-  
-      // Draw numbers
-      if (!hiddenNumbers.includes(i)) {
-        ctx.fillStyle = '#fff';
-        ctx.font = `${radius * 0.1}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(
-          i + 1,
-          (radius - radius * 0.18) * Math.cos(angle + Math.PI / sectors),
-          (radius - radius * 0.18) * Math.sin(angle + Math.PI / sectors)
-        );
-      }
+    if (!hiddenNumbers.includes(i)) {
+      ctx.fillStyle = '#fff';
+      ctx.font = `${radius * 0.1}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(
+        i + 1,
+        (radius - radius * 0.18) * Math.cos(angle + Math.PI / sectors),
+        (radius - radius * 0.18) * Math.sin(angle + Math.PI / sectors)
+      );
     }
-  
-    // Draw green tangent arrows (классические стрелочки)
-    for (let i = 0; i < sectors; i++) {
-        const angle = (2 * Math.PI / sectors) * i - Math.PI / 2;
-        const nextAngle = angle + (2 * Math.PI / sectors);
-        const midAngle = (angle + nextAngle) / 2 - Math.PI / 90;
-    
-        const arrowRadius = radius * 0.93;
-        const arrowLength = radius * 0.07;
-        const arrowWidth = radius * 0.03;
-    
-        ctx.save();
-        ctx.translate(
-        arrowRadius * Math.cos(midAngle),
-        arrowRadius * Math.sin(midAngle)
-        );
-        ctx.rotate(midAngle + Math.PI); // стрелка вдоль касательной
-    
-        ctx.fillStyle = 'green';
-        ctx.beginPath();
-    
-        // Старт из центра стрелки (у основания)
-        ctx.moveTo(-arrowWidth / 2, 0);                    // нижний левый угол основания
-        ctx.lineTo(-arrowWidth / 2, -arrowLength * 0.6);   // левый край стержня
-        ctx.lineTo(-arrowWidth, -arrowLength * 0.6);       // у основания наконечника
-        ctx.lineTo(0, -arrowLength);                       // кончик стрелки
-        ctx.lineTo(arrowWidth, -arrowLength * 0.6);        // правый край наконечника
-        ctx.lineTo(arrowWidth / 2, -arrowLength * 0.6);    // правый край стержня
-        ctx.lineTo(arrowWidth / 2, 0);                     // нижний правый угол основания
-        ctx.closePath();
-        ctx.fill();
-    
-        ctx.restore();
-    }
-  
-  
-    ctx.restore();
-  
-    // Draw rotating arrow
-    drawArrow();
+  }
 
-    // Draw center concentric circles (on top of everything)
+  for (let i = 0; i < sectors; i++) {
+    const angle = (2 * Math.PI / sectors) * i - Math.PI / 2;
+    const nextAngle = angle + (2 * Math.PI / sectors);
+    const midAngle = (angle + nextAngle) / 2 - Math.PI / 90;
+
+    const arrowRadius = radius * 0.93;
+    const arrowLength = radius * 0.07;
+    const arrowWidth = radius * 0.03;
+
     ctx.save();
-    ctx.translate(radius, radius);
+    ctx.translate(
+      arrowRadius * Math.cos(midAngle),
+      arrowRadius * Math.sin(midAngle)
+    );
+    ctx.rotate(midAngle + Math.PI);
 
-    // External green circle
-    ctx.beginPath();
-    ctx.arc(0, 0, radius * 0.07, 0, 2 * Math.PI);
     ctx.fillStyle = 'green';
-    ctx.fill();
-
-    // Internal red circle
     ctx.beginPath();
-    ctx.arc(0, 0, radius * 0.035, 0, 2 * Math.PI);
-    ctx.fillStyle = 'red';
+    ctx.moveTo(-arrowWidth / 2, 0);
+    ctx.lineTo(-arrowWidth / 2, -arrowLength * 0.6);
+    ctx.lineTo(-arrowWidth, -arrowLength * 0.6);
+    ctx.lineTo(0, -arrowLength);
+    ctx.lineTo(arrowWidth, -arrowLength * 0.6);
+    ctx.lineTo(arrowWidth / 2, -arrowLength * 0.6);
+    ctx.lineTo(arrowWidth / 2, 0);
+    ctx.closePath();
     ctx.fill();
 
     ctx.restore();
-
   }
 
-// Draw rotating arrow separately
+  ctx.restore();
+  drawArrow();
+
+  ctx.save();
+  ctx.translate(radius, radius);
+  ctx.beginPath();
+  ctx.arc(0, 0, radius * 0.07, 0, 2 * Math.PI);
+  ctx.fillStyle = 'green';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(0, 0, radius * 0.035, 0, 2 * Math.PI);
+  ctx.fillStyle = 'red';
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// Drawing the pointer
 function drawArrow() {
-    const radius = canvas.width / 2;
-    ctx.save();
-    ctx.translate(radius, radius);
-    ctx.rotate(arrowAngle);
-  
-    const baseWidth = radius * 0.06;  // ширина прямоугольной части
-    const rectLength = radius * 0.8;  // длина прямоугольной части
-    const triangleLength = radius * 0.05; // длина треугольного "носа"
-  
-    ctx.fillStyle = 'red';
-  
-    // Прямоугольная часть
-    ctx.beginPath();
-    ctx.moveTo(-baseWidth / 2, 0);
-    ctx.lineTo(-baseWidth / 2, -rectLength);
-    ctx.lineTo(baseWidth / 2, -rectLength);
-    ctx.lineTo(baseWidth / 2, 0);
-    ctx.closePath();
-    ctx.fill();
-  
-    // Треугольник на конце
-    ctx.beginPath();
-    ctx.moveTo(-baseWidth / 2, -rectLength);
-    ctx.lineTo(0, -rectLength - triangleLength);
-    ctx.lineTo(baseWidth / 2, -rectLength);
-    ctx.closePath();
-    ctx.fill();
-  
-    ctx.restore();
-  }
-  
+  const radius = canvas.width / 2;
+  ctx.save();
+  ctx.translate(radius, radius);
+  ctx.rotate(arrowAngle);
 
-// Sound effects
+  const baseWidth = radius * 0.06;
+  const rectLength = radius * 0.8;
+  const triangleLength = radius * 0.05;
+
+  ctx.fillStyle = 'red';
+  ctx.beginPath();
+  ctx.moveTo(-baseWidth / 2, 0);
+  ctx.lineTo(-baseWidth / 2, -rectLength);
+  ctx.lineTo(baseWidth / 2, -rectLength);
+  ctx.lineTo(baseWidth / 2, 0);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-baseWidth / 2, -rectLength);
+  ctx.lineTo(0, -rectLength - triangleLength);
+  ctx.lineTo(baseWidth / 2, -rectLength);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// Audio
 const spinSound = document.getElementById('spinSound');
 const gongSound = document.getElementById('gongSound');
 const blackboxSound = document.getElementById('blackboxSound');
@@ -193,141 +146,207 @@ const sound_10_secSound = document.getElementById('sound_10_secSound');
 const time_outSound = document.getElementById('time_outSound');
 const finishSound = document.getElementById('finishSound');
 
-// Spin arrow logic
-canvas.addEventListener('click', (e) => {
-    if (spinning || longPressTriggered) {
-      longPressTriggered = false;
-      return;
+// Countdown logic
+const countdownBtn = document.getElementById('countdownBtn');
+let countdown = 60;
+let countdownInterval = null;
+let isCountingDown = false;
+
+const startSound = gongSound;
+const warningSound = sound_10_secSound;
+const endSound = time_outSound;
+
+function resetCountdown() {
+  clearInterval(countdownInterval);
+  countdown = 60;
+  countdownBtn.textContent = "60";
+  isCountingDown = false;
+}
+
+countdownBtn.addEventListener('click', () => {
+  if (isCountingDown) {
+    resetCountdown();
+    return;
+  }
+
+  stopAllSounds();
+  startSound.play();
+  isCountingDown = true;
+  countdownBtn.textContent = countdown;
+
+  countdownInterval = setInterval(() => {
+    countdown--;
+    countdownBtn.textContent = countdown;
+
+    if (countdown === 10) warningSound.play();
+    if (countdown === 0) {
+      endSound.play();
+      resetCountdown();
     }
-    spinning = true;
-    spinSound.play();
+  }, 1000);
+});
+
+// Spin logic
+let pressTimer;
+let longPressTriggered = false;
+
+canvas.addEventListener('click', (e) => {
+  if (spinning || longPressTriggered) {
+    longPressTriggered = false;
+    return;
+  }
+
+  if (lastLandedSector !== null) {
+    let sectorToHide = lastLandedSector;
   
-    const sectorAngle = (2 * Math.PI) / sectors;
-    const randomSector = Math.floor(Math.random() * sectors);
-  
-    // Целевой угол: стрелка останавливается четко в центре выбранного сектора
-    const rotations = 18; // количество полных оборотов
-    const targetAngle =
-      rotations * 2 * Math.PI +
-      (randomSector * sectorAngle) +
-      sectorAngle / 2 -
-      Math.PI / 2;
-  
-    const startAngle = arrowAngle;
-    const startTime = performance.now();
-  
-    function spin(time) {
-      const elapsed = time - startTime;
-      const duration = 15000;
-  
-      if (elapsed < duration) {
-        arrowAngle = easeOut(elapsed, startAngle, targetAngle - startAngle, duration);
-        drawWheel();
-        requestAnimationFrame(spin);
-      } else {
-        arrowAngle = targetAngle % (2 * Math.PI);
-  
-        // Правильный расчет без дополнительного смещения!
-        let normalizedAngle = arrowAngle % (2 * Math.PI);
-        if (normalizedAngle < 0) normalizedAngle += 2 * Math.PI;
-  
-        // Определяем сектор, на который действительно указывает стрелка
-        const landedSector = Math.floor(normalizedAngle / sectorAngle);
-        const sectorToHide = landedSector % sectors;
-  
-        hiddenNumbers.push(sectorToHide);
-        drawWheel();
-        spinning = false;
+    // If already hidden, search clockwise for the next visible sector
+    if (hiddenNumbers.includes(sectorToHide)) {
+      for (let i = 1; i < sectors; i++) {
+        const candidate = (sectorToHide + i) % sectors;
+        if (!hiddenNumbers.includes(candidate)) {
+          sectorToHide = candidate;
+          break;
+        }
       }
     }
-    requestAnimationFrame(spin);
-  });
   
+    // Only hide if it's not already hidden
+    if (!hiddenNumbers.includes(sectorToHide)) {
+      hiddenNumbers.push(sectorToHide);
+    }
   
+    lastLandedSector = null;
+  }
 
-// Ease-out function for smooth spinning
+  spinning = true;
+  spinSound.play();
+
+  const sectorAngle = (2 * Math.PI) / sectors;
+  const randomSector = Math.floor(Math.random() * sectors);
+
+  const rotations = 18;
+  const targetAngle = rotations * 2 * Math.PI + (randomSector * sectorAngle) + sectorAngle / 2 - Math.PI / 2;
+
+  const startAngle = arrowAngle;
+  const startTime = performance.now();
+
+  function spin(time) {
+    const elapsed = time - startTime;
+    const duration = 15000;
+
+    if (elapsed < duration) {
+      arrowAngle = easeOut(elapsed, startAngle, targetAngle - startAngle, duration);
+      drawWheel();
+      requestAnimationFrame(spin);
+    } else {
+      arrowAngle = targetAngle % (2 * Math.PI);
+      let normalizedAngle = arrowAngle % (2 * Math.PI);
+      if (normalizedAngle < 0) normalizedAngle += 2 * Math.PI;
+      const landedSector = Math.floor(normalizedAngle / sectorAngle);
+      lastLandedSector = landedSector % sectors;
+      drawWheel();
+      spinning = false;
+    }
+  }
+
+  requestAnimationFrame(spin);
+});
+
 function easeOut(t, b, c, d) {
   t /= d;
   return -c * t * (t - 2) + b;
 }
 
-// Reset sectors
-document.getElementById('reset').onclick = () => {
-  hiddenNumbers = [];
-  arrowAngle = 0;
-  drawWheel();
-};
-
-// Long press to toggle sectors correctly
-let pressTimer;
-let longPressTriggered = false;
-
-canvas.addEventListener('mousedown', (e) => {
-  longPressTriggered = false;
-  pressTimer = setTimeout(() => {
-    const sector = getClickedSector(e);
-    if (sector !== null) {
-      if (hiddenNumbers.includes(sector)) {
-        hiddenNumbers = hiddenNumbers.filter(n => n !== sector);
-      } else {
-        hiddenNumbers.push(sector);
-      }
-      drawWheel();
-    }
-    longPressTriggered = true;
-  }, 500);
-});
-
-canvas.addEventListener('mouseup', () => clearTimeout(pressTimer));
-canvas.addEventListener('mouseleave', () => clearTimeout(pressTimer));
-
-// Calculate clicked sector correctly
-function getClickedSector(e) {
-  const rect = canvas.getBoundingClientRect();
-  const radius = canvas.width / 2;
-  const x = e.clientX - rect.left - radius;
-  const y = e.clientY - rect.top - radius;
-  const distFromCenter = Math.sqrt(x * x + y * y);
-  if (distFromCenter > radius) return null;
-
-  let angle = Math.atan2(y, x) + Math.PI / 2;
-  angle = (angle + 2 * Math.PI) % (2 * Math.PI);
-  return Math.floor(angle / (2 * Math.PI / sectors));
+function stopAllSounds() {
+  [spinSound, gongSound, blackboxSound, fanfareSound, sound_10_secSound, time_outSound, finishSound, correctSound, wrongSound, pauseSound].forEach(audio => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
 }
 
-function stopAllSounds() {
-    [spinSound, gongSound, blackboxSound, fanfareSound, sound_10_secSound, time_outSound, finishSound].forEach(audio => {
+function fadeAllSounds() {
+  const fadeDuration = 3000; // 3 seconds
+
+  const sounds = [
+    spinSound, gongSound, blackboxSound, fanfareSound,
+    sound_10_secSound, time_outSound, finishSound,
+    correctSound, wrongSound, pauseSound
+  ];
+
+  sounds.forEach(audio => {
+    if (!audio || audio.paused) return;
+
+    // Ensure volume is at full before fading
+    if (audio.volume === 0) {
       audio.pause();
       audio.currentTime = 0;
-    });
-  }
-  
+      return;
+    }
+
+    const stepTime = 50; // ms
+    const steps = fadeDuration / stepTime;
+    const volumeStep = audio.volume / steps;
+
+    const fade = setInterval(() => {
+      if (audio.volume > volumeStep) {
+        audio.volume -= volumeStep;
+      } else {
+        clearInterval(fade);
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 1.0; // reset volume for next use
+      }
+    }, stepTime);
+  });
+}
 
 // Sound buttons
 document.getElementById('gong').onclick = () => {
-    stopAllSounds();
-    gongSound.play();
+  stopAllSounds();
+  gongSound.play();
 };
+
 document.getElementById('blackbox').onclick = () => {
-    stopAllSounds();
-    blackboxSound.play();
+  stopAllSounds();
+  blackboxSound.play();
 };
+
 document.getElementById('fanfare').onclick = () => {
-    stopAllSounds();
-    fanfareSound.play();
+  stopAllSounds();
+  fanfareSound.play();
 };
+
 document.getElementById('10_sec').onclick = () => {
-    stopAllSounds();
-    sound_10_secSound.play();
+  stopAllSounds();
+  sound_10_secSound.play();
 };
+
 document.getElementById('timer').onclick = () => {
-    stopAllSounds();
-    time_outSound.play();
+  stopAllSounds();
+  time_outSound.play();
 };
+
 document.getElementById('finish').onclick = () => {
-    stopAllSounds();
-    finishSound.play();
+  stopAllSounds();
+  finishSound.play();
 };
+
 document.getElementById('mute').onclick = () => {
-    stopAllSounds();
+  fadeAllSounds();
+};
+
+// Optional new buttons
+document.getElementById('correct').onclick = () => {
+  stopAllSounds();
+  document.getElementById('correctSound').play();
+};
+
+document.getElementById('wrong').onclick = () => {
+  stopAllSounds();
+  document.getElementById('wrongSound').play();
+};
+
+document.getElementById('pause').onclick = () => {
+  stopAllSounds();
+  document.getElementById('pauseSound').play();
 };
