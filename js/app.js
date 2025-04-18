@@ -152,7 +152,7 @@ let countdown = 60;
 let countdownInterval = null;
 let isCountingDown = false;
 
-const startSound = gongSound;
+const startSound = sound_10_secSound;
 const warningSound = sound_10_secSound;
 const endSound = time_outSound;
 

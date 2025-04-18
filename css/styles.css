@@ -1,3 +1,13 @@
+/* Отключаем «синие» подсветки и контекстное меню при долгом тапе */
+*, img, button {
+  -webkit-tap-highlight-color: transparent;  /* убирает подсветку при касании */
+  -webkit-touch-callout: none;                /* отключает callout меню при долгом тапе */
+  -webkit-user-select: none;                  /* запрет выделения текста */
+  user-select: none;
+  outline: none;                              /* убирает фокусный контур */
+  touch-action: manipulation;                 /* ускоряет клики и душит двойной зум */
+}
+
 /* 1) сброс и базовая часть */
 * {
   box‑sizing: border-box;
