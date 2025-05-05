@@ -21,46 +21,72 @@ resizeCanvas();
 // Drawing the wheel
 function drawWheel() {
   const radius = canvas.width / 2;
+  const sectorAngle = (2 * Math.PI) / sectors;
+
+  // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Save context state and move origin to center
   ctx.save();
   ctx.translate(radius, radius);
 
-  ctx.fillStyle = '#aaa';
-  ctx.beginPath();
-  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-  ctx.fill();
-
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = radius * 0.015;
-  ctx.beginPath();
-  ctx.arc(0, 0, radius - ctx.lineWidth / 2, 0, 2 * Math.PI);
-  ctx.stroke();
-
+  // Draw each sector background and border
   for (let i = 0; i < sectors; i++) {
-    const angle = (2 * Math.PI / sectors) * i - Math.PI / 2;
+    const startAngle = -Math.PI / 2 + sectorAngle * i;
+    const endAngle = startAngle + sectorAngle;
 
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, radius, startAngle, endAngle);
+    ctx.closePath();
+
+    // 12th sector (index 11) is green, others are grey
+    ctx.fillStyle = (i === 11) ? 'green' : '#aaa';
+    ctx.fill();
+
+    // Draw sector outline
     ctx.strokeStyle = '#000';
+    ctx.lineWidth = radius * 0.015;
+    ctx.stroke();
+  }
+
+  // Draw the lines dividing sectors
+  for (let i = 0; i < sectors; i++) {
+    const angle = -Math.PI / 2 + sectorAngle * i;
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.lineTo(radius * Math.cos(angle), radius * Math.sin(angle));
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = radius * 0.015;
     ctx.stroke();
+  }
 
-    if (!hiddenNumbers.includes(i)) {
+  // Draw labels (numbers or "Блиц") inside each sector
+  ctx.font = `${radius * 0.1}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  for (let i = 0; i < sectors; i++) {
+    if (hiddenNumbers.includes(i)) continue; // skip hidden sectors
+
+    const midAngle = -Math.PI / 2 + sectorAngle * i + sectorAngle / 2;
+    const x = Math.cos(midAngle) * (radius - radius * 0.18);
+    const y = Math.sin(midAngle) * (radius - radius * 0.18);
+
+    if (i === 11) {
+      // Write "Блиц" in white on the green sector
       ctx.fillStyle = '#fff';
-      ctx.font = `${radius * 0.1}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(
-        i + 1,
-        (radius - radius * 0.18) * Math.cos(angle + Math.PI / sectors),
-        (radius - radius * 0.18) * Math.sin(angle + Math.PI / sectors)
-      );
+      ctx.fillText('Блиц', x, y);
+    } else {
+      // Write the sector number in black
+      ctx.fillStyle = '#000';
+      ctx.fillText(i + 1, x, y);
     }
   }
 
+  // Draw decorative spikes around the wheel edge
   for (let i = 0; i < sectors; i++) {
-    const angle = (2 * Math.PI / sectors) * i - Math.PI / 2;
-    const nextAngle = angle + (2 * Math.PI / sectors);
+    const angle = -Math.PI / 2 + sectorAngle * i;
+    const nextAngle = angle + sectorAngle;
     const midAngle = (angle + nextAngle) / 2 - Math.PI / 90;
 
     const arrowRadius = radius * 0.93;
@@ -89,16 +115,23 @@ function drawWheel() {
     ctx.restore();
   }
 
+  // Restore to default orientation
   ctx.restore();
+
+  // Draw the pointer arrow on top of the wheel
   drawArrow();
 
+  // Draw the central circles
   ctx.save();
   ctx.translate(radius, radius);
+
+  // Outer green circle
   ctx.beginPath();
   ctx.arc(0, 0, radius * 0.07, 0, 2 * Math.PI);
   ctx.fillStyle = 'green';
   ctx.fill();
 
+  // Inner red circle
   ctx.beginPath();
   ctx.arc(0, 0, radius * 0.035, 0, 2 * Math.PI);
   ctx.fillStyle = 'red';
@@ -106,6 +139,7 @@ function drawWheel() {
 
   ctx.restore();
 }
+
 
 // Drawing the pointer
 function drawArrow() {
