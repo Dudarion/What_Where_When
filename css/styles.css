@@ -47,13 +47,13 @@ canvas {
 /* 4) Зона кнопок — три ряда */
 #bottom {
   flex-direction: column;
-  gap: 40px;
-  padding: 40px;
+  gap: 4vmin;
+  padding: 4vmin;
 }
 .row {
   flex: 1;
   display: flex;
-  gap: 40px;
+  gap: 4vmin;
 }
 
 /* 5) Кнопки/иконки внутри ряда */
